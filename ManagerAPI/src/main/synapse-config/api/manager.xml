@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/manager" name="manager" xmlns="http://ws.apache.org/ns/synapse">
+  <resource methods="POST" protocol="http" uri-template="/api/volunteers/authenticate">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Manager API - IN"/>
+        <property name="Message" value="Authentication"/>
+      </log>
+      <send>
+      	<endpoint>
+        	<http method="POST" trace="disable" uri="http://localhost:8080/VolunteerManager/api/authentication"/>
+    	</endpoint>
+      </send>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="POST" protocol="http" uri-template="/api/gardens/authenticate">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Manager API - IN"/>
+        <property name="Message" value="Authentication"/>
+      </log>
+      <send>
+	      <endpoint>
+	          <http method="POST" trace="disable" uri-template="http://localhost:8081/GardenManager/api/v1/gardenservice/users"/>
+	      </endpoint>
+      </send>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="POST GET" protocol="http" uri-template="/api/volunteers?access_token={token}">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Volunteers API - IN"/>
+      </log>
+      <switch source="$axis2:HTTP_METHOD">
+        <case regex="GET">
+          <log level="custom">
+            <property name="Message" value="--- GET list of volunteers ---"/>
+          </log>
+          <send>
+	         <endpoint>
+	             <http method="GET" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers?access_token={uri.var.token}"/>
+	         </endpoint>
+	     </send>
+        </case>
+        <case regex="POST">
+          <log level="custom">
+            <property name="Message" value="--- POST a new volunteer ---"/>
+          </log>
+          <send>
+            <endpoint>
+                <http method="POST" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers?access_token={uri.var.token}"/>
+            </endpoint>
+        </send>
+        </case>
+        <default/>
+      </switch>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="POST DELETE GET" protocol="http" uri-template="/api/volunteers/{volunteerID}?access_token={token}">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Volunteers API - IN"/>
+      </log>
+      <switch source="$axis2:HTTP_METHOD">
+        <case regex="GET">
+          <log level="custom">
+            <property name="Message" value="--- GET volunteer ---"/>
+          </log>
+          <send>
+	         <endpoint>
+	             <http method="GET" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers/{uri.var.volunteerID}?access_token={uri.var.token}"/>
+	         </endpoint>
+	     </send>
+        </case>
+        <case regex="POST">
+          <log level="custom">
+            <property name="Message" value="--- UPDATE volunteer ---"/>
+          </log>
+          <send>
+	          <endpoint>
+	              <http method="POST" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers/{uri.var.volunteerID}?access_token={uri.var.token}"/>
+	          </endpoint>
+	      </send>
+        </case>
+        <case regex="DELETE">
+          <log level="custom">
+            <property name="Message" value="--- DELETE volunteer ---"/>
+          </log>
+          <send>
+		      <endpoint>
+		          <http method="DELETE" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers/{uri.var.volunteerID}?access_token={uri.var.token}"/>
+		      </endpoint>
+		  </send>
+        </case>
+        <default/>
+      </switch>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="POST" protocol="http" uri-template="/api/volunteers/{volunteerID}/tasks?access_token={token}">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Volunteers API - IN"/>
+      </log>
+      <log level="custom">
+        <property name="Message" value="--- POST a task to volunteer ---"/>
+      </log>
+      <send>
+	      <endpoint>
+	          <http method="POST" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers/{uri.var.volunteerID}/tasks?access_token={uri.var.token}"/>
+	      </endpoint>
+	  </send>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="POST DELETE GET" protocol="http" uri-template="/api/volunteers/{volunteerID}/tasks/{taskID}?access_token={token}">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Volunteers API - IN"/>
+      </log>
+      <switch source="$axis2:HTTP_METHOD">
+        <case regex="GET">
+          <log level="custom">
+            <property name="Message" value="--- GET a task for a volunteer ---"/>
+          </log>
+          <send>
+	         <endpoint>
+	             <http method="GET" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers/{uri.var.volunteerID}/tasks/{uri.var.taskID}?access_token={uri.var.token}"/>
+	         </endpoint>
+	     </send>
+        </case>
+        <case regex="DELETE">
+          <log level="custom">
+            <property name="Message" value="--- DELETE a task for a volunteer ---"/>
+          </log>
+          <send>
+	         <endpoint>
+	             <http method="DELETE" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers/{uri.var.volunteerID}/tasks/{uri.var.taskID}?access_token={uri.var.token}"/>
+	         </endpoint>
+	     </send>
+        </case>
+        <case regex="POST">
+          <log level="custom">
+            <property name="Message" value="--- UPDATE a task for a volunteer ---"/>
+          </log>
+          <send>
+	        <endpoint>
+	            <http method="POST" trace="disable" uri-template="http://localhost:8080/VolunteerManager/api/v1/volunteerservice/volunteers/{uri.var.volunteerID}/tasks/{uri.var.taskID}?access_token={uri.var.token}"/>
+	        </endpoint>
+	    </send>
+        </case>
+        <default/>
+      </switch>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="POST GET" protocol="http" uri-template="/api/gardens?access_token={token}">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Gardens API - IN"/>
+      </log>
+      <switch source="$axis2:HTTP_METHOD">
+        <case regex="GET">
+          <log level="custom">
+            <property name="Message" value="--- GET list of gardens ---"/>
+          </log>
+          <send>
+	          <endpoint>
+	              <http method="GET" uri-template="http://localhost:8081/GardenManager/api/v1/gardenservice/gardens?access_token={uri.var.token}"/>
+	          </endpoint>
+	      </send>
+        </case>
+        <case regex="POST">
+          <log level="custom">
+            <property name="Message" value="--- POST a new garden ---"/>
+          </log>
+          <send>
+	         <endpoint>
+	             <http method="POST" uri-template="http://localhost:8081/GardenManager/api/v1/gardenservice/gardens?access_token={uri.var.token}"/>
+	         </endpoint>
+	     </send>
+        </case>
+        <default/>
+      </switch>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="GET" protocol="http" uri-template="/api/gardens/categories?access_token={token}">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Gardens API - IN"/>
+      </log>
+      <log level="custom">
+        <property name="Message" value="--- GET list of categories ---"/>
+      </log>
+      <send/>
+    </inSequence>
+    <outSequence>
+      <send>
+	      <endpoint>
+	          <http method="GET" uri-template="http://localhost:8081/GardenManager/api/v1/gardenservice/categories?access_token={uri.var.token}"/>
+	      </endpoint>
+	  </send>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+  <resource methods="POST DELETE GET" protocol="http" uri-template="/api/gardens/{gardenID}?access_token={token}">
+    <inSequence>
+      <log level="custom">
+        <property name="Message" value="Gardens API - IN"/>
+      </log>
+      <switch source="$axis2:HTTP_METHOD">
+        <case regex="GET">
+          <log level="custom">
+            <property name="Message" value="--- GET garden ---"/>
+          </log>
+          <send>
+		       <endpoint>
+		           <http method="GET" uri-template="http://localhost:8081/GardenManager/api/v1/gardenservice/gardens/{uri.var.gardenID}?access_token={uri.var.token}"/>
+		       </endpoint>
+		   </send>
+        </case>
+        <case regex="POST">
+          <log level="custom">
+            <property name="Message" value="--- UPDATE garden ---"/>
+          </log>
+          <send>
+	           <endpoint>
+	               <http method="POST" uri-template="http://localhost:8081/GardenManager/api/v1/gardenservice/gardens/{uri.var.gardenID}?access_token={uri.var.token}"/>
+	           </endpoint>
+	       </send>
+        </case>
+        <case regex="DELETE">
+          <log level="custom">
+            <property name="Message" value="--- DELETE garden ---"/>
+          </log>
+          <send>
+	           <endpoint>
+	               <http method="DELETE" uri-template="http://localhost:8081/GardenManager/api/v1/gardenservice/gardens/{uri.var.gardenID}?access_token={uri.var.token}"/>
+	           </endpoint>
+	       </send>
+        </case>
+        <default/>
+      </switch>
+    </inSequence>
+    <outSequence>
+      <send/>
+    </outSequence>
+    <faultSequence/>
+  </resource>
+</api>
